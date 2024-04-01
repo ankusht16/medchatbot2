@@ -1,0 +1,52 @@
+<!-- index.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical Chatbot</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        #chat-container {
+            max-height: 400px;
+            overflow-y: scroll;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Medical Chatbot</h1>
+        <div id="chat-container" class="mb-3"></div>
+        <textarea id="user-input" class="form-control" rows="3" placeholder="Type your message..."></textarea>
+        <button id="send-btn" class="btn btn-primary mt-3">Send</button>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#send-btn').click(function() {
+                var userMessage = $('#user-input').val().trim();
+                if (userMessage !== '') {
+                    $('#chat-container').append('<div class="alert alert-primary" role="alert">You: ' + userMessage + '</div>');
+                    $('#user-input').val('');
+
+                    $.ajax({
+                        type: 'POST',
+                        url: '/get_response',
+                        data: { user_message: userMessage },
+                        success: function(response) {
+                            var botResponse = '<div class="alert alert-secondary" role="alert">Bot: ' + response.response + '</div>';
+                            var precautions = '<div class="alert alert-info" role="alert">Precautions: ' + response.precautions.join(', ') + '</div>';
+                            var treatments = '<div class="alert alert-info" role="alert">Treatments: ' + response.treatments.join(', ') + '</div>';
+                            $('#chat-container').append(botResponse);
+                            $('#chat-container').append(precautions);
+                            $('#chat-container').append(treatments);
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
